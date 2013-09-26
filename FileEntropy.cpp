@@ -5,11 +5,14 @@ Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
+//Запрещение изменения размеров окна
     setWindowFlags( Qt::Window
     | Qt::WindowCloseButtonHint
     | Qt::CustomizeWindowHint);
 
     ui->setupUi(this);
+
+//Разрешение контроля положения курсора на форме
     this->setMouseTracking(true);
 
     connect (ui->File_Button, SIGNAL(clicked()), this, SLOT(FindFilePath()));
@@ -28,8 +31,12 @@ Widget::~Widget()
 
 void Widget::FindFilePath()
 {
+// Получение путь к файлу
     entropyFilePath = QFileDialog::getOpenFileName();
+
+// Выделение имени файла из пути
     entropyFileName = entropyFilePath.split("/");
+
     QWidget::setWindowTitle(QWidget::windowTitle()+" "+entropyFileName.last());
 
     QFile work_file(entropyFilePath);
@@ -40,13 +47,18 @@ void Widget::FindFilePath()
         delete pmb;
     }
 
+// readedData - массив частот символов
     for(int i = 0; i < symbNumber; i++) readedData[i] = 0;
 
+/* Цикл подсчета частот символов. Заканчивается если значение считанных символов dataCounter меньше,
+   чем размер буфера для считывания arraySize */
     do
     {
+// dataCounter хранит реально количество реально прочитанных байтов
         dataCounter = 0;
         dataCounter = work_file.read(byteData, arraySize);
 
+// Приведение кодов считанных символов
         for(int i = 0; i < dataCounter; i++)
         {
             if (byteData[i] < 0)
@@ -54,6 +66,8 @@ void Widget::FindFilePath()
                 abs = (int)byteData[i]+symbNumber;
             }
             else abs = (int)byteData[i];
+
+        // увеличение счетчика частот символов
             readedData[abs]++;
         }
     }while(dataCounter == arraySize);
@@ -61,6 +75,7 @@ void Widget::FindFilePath()
 
     ui->spinBox->setValue(0);
     ShowAmount();
+
 
     percByte = 0;
     for(int i = 0; i < symbNumber; i++)
@@ -81,6 +96,9 @@ void Widget::FindFilePath()
     ui->label_entr_perc->setText(squere);
 }
 
+// Метод предназначен для определения максимального значения в массиве
+// Принимает массив целых чисел и его размер
+// Возвращает индекс элемента содержащего максимальное значение
 int Widget::FindMax(int arr[], int arrsize)
 {
     int max = 0;
@@ -96,6 +114,9 @@ int Widget::FindMax(int arr[], int arrsize)
     return index_of_max;
 }
 
+// Метод предназначен для округления чисел типа double до целого значения
+// В качестве аргумента принимает значения числа, которое необходимо округлить
+// Возвращает переменную типа int
 int Widget::RoundToInt(double some_variable)
 {
     int a;

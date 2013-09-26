@@ -41,7 +41,10 @@ private:
     char byteData[arraySize];
 
 private slots:
+// Метод для определения файла для расчета энтропии
     void FindFilePath();
+
+// Метод
     void ShowAmount();
 
 
